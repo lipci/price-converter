@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертор на цени BGN → EUR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .result .breakdown {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .history-section {
+            margin-top: 30px;
+            border-top: 1px solid #e1e5e9;
+            padding-top: 20px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-header h3 {
+            color: #555;
+            font-size: 18px;
+        }
+
+        .clear-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #c0392b;
+        }
+
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .history-item .date {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .history-item .calculation {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .exchange-rate {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Конвертор на цени</h1>
+            <p>BGN → EUR с надценка</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="exchange-rate">
+                📈 Курс: 1 EUR = 1.95583 BGN (фиксиран курс)
+            </div>
+            
+            <div class="input-group">
+                <label for="price">Доставна цена (лв):</label>
+                <input type="number" id="price" placeholder="Въведете цена в лева" step="0.01" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label for="markup">Надценка (%):</label>
+                <input type="number" id="markup" placeholder="Въведете надценка в проценти" step="0.1" min="0" max="1000">
+            </div>
+            
+            <button class="convert-btn" onclick="convertPrice()">
+                🔄 Преобразувай
+            </button>
+            
+            <div class="result" id="result">
+                <h3 id="finalPrice"></h3>
+                <div class="breakdown" id="breakdown"></div>
+            </div>
+            
+            <div class="history-section">
+                <div class="history-header">
+                    <h3>📋 История</h3>
+                    <button class="clear-btn" onclick="clearHistory()">Изчисти</button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <div class="empty-history">Няма записи в историята</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Фиксиран курс EUR/BGN
+        const EXCHANGE_RATE = 1.95583;
+        
+        // Инициализация на историята в паметта
+        let history = [];
+        
+        // Показване на историята при зареждане
+        window.onload = function() {
+            displayHistory();
+        };
+        
+        function convertPrice() {
+            const priceInput = document.getElementById('price');
+            const markupInput = document.getElementById('markup');
+            const resultDiv = document.getElementById('result');
+            const finalPriceEl = document.getElementById('finalPrice');
+            const breakdownEl = document.getElementById('breakdown');
+            
+            const price = parseFloat(priceInput.value);
+            const markup = parseFloat(markupInput.value) || 0;
+            
+            if (!price || price <= 0) {
+                alert('Моля, въведете валидна цена!');
+                return;
+            }
+            
+            if (markup < 0) {
+                alert('Надценката не може да бъде отрицателна!');
+                return;
+            }
+            
+            // Изчисления
+            const markupAmount = price * (markup / 100);
+            const priceWithMarkup = price + markupAmount;
+            // Закръгляване на продажната цена в лева нагоре до 5 стотинки (0.05)
+            const roundedPriceBGN = Math.ceil(priceWithMarkup * 20) / 20;
+            const finalPriceEUR = roundedPriceBGN / EXCHANGE_RATE;
+            
+            // Показване на резултата
+            finalPriceEl.innerHTML = `
+                ${finalPriceEUR.toFixed(2)} EUR<br>
+                <span style="font-size: 28px; color: rgba(255,255,255,0.9);">${roundedPriceBGN.toFixed(2)} лв</span>
+            `;
+            breakdownEl.innerHTML = `
+                Начална цена: ${price.toFixed(2)} лв<br>
+                Надценка (${markup}%): +${markupAmount.toFixed(2)} лв<br>
+                Цена преди закръгляване: ${priceWithMarkup.toFixed(2)} лв<br>
+                Курс: 1 EUR = ${EXCHANGE_RATE} BGN
+            `;
+            
+            resultDiv.classList.add('show');
+            
+            // Изчистване на полетата за ново въвеждане
+            priceInput.value = '';
+            markupInput.value = '';
+            priceInput.focus();
+            
+            // Добавяне в историята
+            const historyItem = {
+                date: new Date().toLocaleString('bg-BG'),
+                originalPrice: price,
+                markup: markup,
+                markupAmount: markupAmount,
+                priceBeforeRounding: priceWithMarkup,
+                finalPriceBGN: roundedPriceBGN,
+                finalPriceEUR: finalPriceEUR,
+                exchangeRate: EXCHANGE_RATE
+            };
+            
+            history.unshift(historyItem);
+            
+            // Запазване максимум 20 записа
+            if (history.length > 20) {
+                history = history.slice(0, 20);
+            }
+            
+            displayHistory();
+            
+            // Анимация на успех
+            resultDiv.style.animation = 'none';
+            setTimeout(() => {
+                resultDiv.style.animation = 'slideIn 0.5s ease';
+            }, 10);
+        }
+        
+        function displayHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">Няма записи в историята</div>';
+                return;
+            }
+            
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <div class="date">${item.date}</div>
+                    <div class="calculation">
+                        ${item.originalPrice.toFixed(2)} лв + ${item.markup}% = 
+                        ${item.finalPriceBGN.toFixed(2)} лв → 
+                        <strong>${item.finalPriceEUR.toFixed(2)} EUR</strong>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function clearHistory() {
+            if (confirm('Сигурни ли сте, че искате да изчистите историята?')) {
+                history = [];
+                displayHistory();
+            }
+        }
+        
+        // Валидация при въвеждане
+        document.getElementById('price').addEventListener('input', function(e) {
+            if (e.target.value < 0) e.target.value = 0;
+        });
+        
+        document.getElementById('markup').addEventListener('input', function(e) {
+            if (e.target.value < 0) e.target.value = 0;
+            if (e.target.value > 1000) e.target.value = 1000;
+        });
+        
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                convertPrice();
+            }
+        });
+    </script>
+</body>
+</html>
+commit message: "Add price converter app"
